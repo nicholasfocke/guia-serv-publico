@@ -4,6 +4,8 @@ import com.guiaserv.publico.dto.request.CadastroUsuarioRequest;
 import com.guiaserv.publico.dto.request.LoginRequest;
 import com.guiaserv.publico.dto.response.LoginResponse;
 import com.guiaserv.publico.dto.response.UsuarioResponse;
+import com.guiaserv.publico.exception.EmailAlreadyExistsException;
+import com.guiaserv.publico.exception.InvalidCredentialsException;
 import com.guiaserv.publico.model.Perfil;
 import com.guiaserv.publico.model.Usuario;
 import com.guiaserv.publico.repository.UsuarioRepository;
@@ -20,7 +22,7 @@ public class AuthService {
 
     public UsuarioResponse cadastrar(CadastroUsuarioRequest request) {
         if (usuarioRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("E-mail já cadastrado");
+            throw new EmailAlreadyExistsException("E-mail já cadastrado");
         }
 
         Usuario usuario = Usuario.builder()
@@ -42,12 +44,12 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
         Usuario usuario = usuarioRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("E-mail ou senha inválidos"));
+                .orElseThrow(() -> new InvalidCredentialsException("E-mail ou senha inválidos"));
 
         boolean senhaCorreta = passwordEncoder.matches(request.senha(), usuario.getSenha());
 
         if (!senhaCorreta) {
-            throw new RuntimeException("E-mail ou senha inválidos");
+            throw new InvalidCredentialsException("E-mail ou senha inválidos");
         }
 
         UsuarioResponse usuarioResponse = new UsuarioResponse(

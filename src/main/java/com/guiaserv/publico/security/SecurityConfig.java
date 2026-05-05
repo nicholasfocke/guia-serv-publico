@@ -69,6 +69,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/documentos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/documentos/**").hasRole("ADMIN")
 
+                        // CATEGORIAS - PÚBLICO
+                        .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
+
+                        // ADMIN - CATEGORIAS
+                        .requestMatchers(HttpMethod.POST, "/api/categorias").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/categorias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").hasRole("ADMIN")
+
                         // QUALQUER OUTRA ROTA EXIGE LOGIN
                         .anyRequest().authenticated()
                 )

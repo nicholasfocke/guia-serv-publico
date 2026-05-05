@@ -87,6 +87,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/servicos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/servicos/**").hasRole("ADMIN")
 
+                            // UNIDADES - PÚBLICO
+                        .requestMatchers(HttpMethod.GET, "/api/unidades").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/unidades/**").permitAll()
+
+                        // ADMIN - UNIDADES
+                        .requestMatchers(HttpMethod.POST, "/api/unidades").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/unidades/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/unidades/**").hasRole("ADMIN")
+
                         // QUALQUER OUTRA ROTA EXIGE LOGIN
                         .anyRequest().authenticated()
                 )

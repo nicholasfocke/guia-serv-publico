@@ -9,10 +9,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,10 +26,17 @@ public class AuthController {
         UsuarioResponse usuario = authService.cadastrar(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
-}
 
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, String>> usuarioAutenticado(Authentication authentication) {
+        return ResponseEntity.ok(
+                Map.of("usuario", authentication.getName())
+        );
+    }
+}

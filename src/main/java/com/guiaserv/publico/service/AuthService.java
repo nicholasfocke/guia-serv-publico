@@ -9,6 +9,7 @@ import com.guiaserv.publico.exception.InvalidCredentialsException;
 import com.guiaserv.publico.model.Perfil;
 import com.guiaserv.publico.model.Usuario;
 import com.guiaserv.publico.repository.UsuarioRepository;
+import com.guiaserv.publico.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public UsuarioResponse cadastrar(CadastroUsuarioRequest request) {
         if (usuarioRepository.existsByEmail(request.email())) {
@@ -59,6 +61,13 @@ public class AuthService {
                 usuario.getPerfil()
         );
 
-        return new LoginResponse("Login realizado com sucesso", usuarioResponse);
+        String token = jwtService.generateToken(usuario);
+
+        return new LoginResponse(
+                "Login realizado com sucesso",
+                token,
+                "Bearer",
+                usuarioResponse
+        );
     }
 }

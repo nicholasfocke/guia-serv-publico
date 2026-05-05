@@ -23,3 +23,8 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:bXktc3VwZXItc2VjcmV0LWtleS1mb3ItZGV2ZWxvcG1lbnQtb25seS0xMjM0NTY3ODkw}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}

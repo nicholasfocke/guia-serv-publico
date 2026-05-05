@@ -27,15 +27,49 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+
+                        // AUTH
                         .requestMatchers(HttpMethod.POST, "/api/auth/cadastro").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/me").hasAnyRole("USER", "ADMIN")
 
+                        // SWAGGER
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+                        // SERVIÇOS - PÚBLICO
+                        .requestMatchers(HttpMethod.GET, "/api/servicos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/servicos/**").permitAll()
+
+                        // UNIDADES - PÚBLICO
+                        .requestMatchers(HttpMethod.GET, "/api/unidades").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/unidades/**").permitAll()
+
+                        // DOCUMENTOS - USER OU ADMIN
+                        .requestMatchers(HttpMethod.GET, "/api/servicos/*/documentos").hasAnyRole("USER", "ADMIN")
+
+                        // AVALIAÇÕES - USER OU ADMIN
+                        .requestMatchers(HttpMethod.POST, "/api/avaliacoes").hasAnyRole("USER", "ADMIN")
+
+                        // ADMIN - SERVIÇOS
+                        .requestMatchers(HttpMethod.POST, "/api/servicos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/servicos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/servicos/**").hasRole("ADMIN")
+
+                        // ADMIN - UNIDADES
+                        .requestMatchers(HttpMethod.POST, "/api/unidades").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/unidades/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/unidades/**").hasRole("ADMIN")
+
+                        // ADMIN - DOCUMENTOS
+                        .requestMatchers(HttpMethod.POST, "/api/documentos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/documentos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/documentos/**").hasRole("ADMIN")
+
+                        // QUALQUER OUTRA ROTA EXIGE LOGIN
                         .anyRequest().authenticated()
                 )
 

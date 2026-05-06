@@ -96,6 +96,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/unidades/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/unidades/**").hasRole("ADMIN")
 
+                        // DOCUMENTOS - USER OU ADMIN
+                        .requestMatchers(HttpMethod.GET, "/api/servicos/*/documentos").hasAnyRole("USER", "ADMIN")
+
+                        // ADMIN - DOCUMENTOS
+                        .requestMatchers(HttpMethod.POST, "/api/documentos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/documentos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/documentos/**").hasRole("ADMIN")
+
                         // QUALQUER OUTRA ROTA EXIGE LOGIN
                         .anyRequest().authenticated()
                 )

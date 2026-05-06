@@ -104,6 +104,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/documentos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/documentos/**").hasRole("ADMIN")
 
+                        // VÍNCULO SERVIÇO-UNIDADE - PÚBLICO
+                        .requestMatchers(HttpMethod.GET, "/api/servicos/*/unidades").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/unidades/*/servicos").permitAll()
+
+                        // ADMIN - VÍNCULO SERVIÇO-UNIDADE
+                        .requestMatchers(HttpMethod.POST, "/api/servicos/*/unidades/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/servicos/*/unidades/*").hasRole("ADMIN")
+
                         // QUALQUER OUTRA ROTA EXIGE LOGIN
                         .anyRequest().authenticated()
                 )

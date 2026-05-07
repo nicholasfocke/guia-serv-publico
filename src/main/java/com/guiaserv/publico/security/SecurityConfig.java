@@ -119,6 +119,14 @@ public class SecurityConfig {
                         // AVALIAÇÕES - USER OU ADMIN
                         .requestMatchers(HttpMethod.POST, "/api/avaliacoes").hasAnyRole("USER", "ADMIN")
 
+                        // HORÁRIOS - PÚBLICO
+                        .requestMatchers(HttpMethod.GET, "/api/servicos-unidades/*/horarios").permitAll()
+
+                        // ADMIN - HORÁRIOS
+                        .requestMatchers(HttpMethod.POST, "/api/horarios").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/horarios/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/horarios/**").hasRole("ADMIN")
+
                         // QUALQUER OUTRA ROTA EXIGE LOGIN
                         .anyRequest().authenticated()
                 )

@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: guiaserv-postgres
+
+    environment:
+      POSTGRES_DB: guia_serv_publico
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: post
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: guiaserv-backend
+
+    depends_on:
+      - postgres
+
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/guia_serv_publico
+      DB_USERNAME: postgres
+      DB_PASSWORD: post
+      DDL_AUTO: update
+      SERVER_PORT: 8080
+      JWT_SECRET: bXktc3VwZXItc2VjcmV0LWtleS1mb3ItZGV2ZWxvcG1lbnQtb25seS0xMjM0NTY3ODkw
+      JWT_EXPIRATION_MS: 86400000
+
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

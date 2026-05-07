@@ -3,20 +3,20 @@ spring:
     name: guia-serv-publico
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/guia_serv_publico
-    username: postgres
-    password: post
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/guia_serv_publico}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:post}
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${DDL_AUTO:update}
     show-sql: true
     properties:
       hibernate:
         format_sql: true
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 springdoc:
   swagger-ui:

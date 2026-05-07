@@ -48,7 +48,7 @@ public class UnidadeAtendimentoService {
 
         if (cidade != null && !cidade.isBlank() && bairro != null && !bairro.isBlank()) {
             unidades = unidadeAtendimentoRepository
-                    .findByCidadeContainingIgnoreCaseAndBairroContainingIgnoreCaseAndAtivoTrue(cidade, bairro);
+                    .buscarPorCidadeEBairro(cidade, bairro);
         } else if (cidade != null && !cidade.isBlank()) {
             unidades = unidadeAtendimentoRepository.findByCidadeContainingIgnoreCaseAndAtivoTrue(cidade);
         } else if (bairro != null && !bairro.isBlank()) {

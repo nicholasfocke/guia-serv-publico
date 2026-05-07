@@ -38,7 +38,7 @@ public class ServicoPublicoController {
 
     @GetMapping("/buscar")
     public ResponseEntity<List<ServicoPublicoResponse>> buscarPorTermo(
-            @RequestParam String termo
+            @RequestParam(required = false) String termo
     ) {
         return ResponseEntity.ok(servicoPublicoService.buscarPorTermo(termo));
     }
@@ -56,4 +56,6 @@ public class ServicoPublicoController {
         servicoPublicoService.excluir(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

@@ -55,14 +55,12 @@ public class ServicoPublicoService {
     }
 
     public List<ServicoPublicoResponse> buscarPorTermo(String termo) {
-        return servicoPublicoRepository
-                .findByNomeContainingIgnoreCaseOrDescricaoContainingIgnoreCaseOrPalavrasChaveContainingIgnoreCase(
-                        termo,
-                        termo,
-                        termo
-                )
+        if (termo == null || termo.isBlank()) {
+            return listarTodos();
+        }
+
+        return servicoPublicoRepository.buscarPorTermo(termo.trim())
                 .stream()
-                .filter(ServicoPublico::getAtivo)
                 .map(this::toResponse)
                 .toList();
     }

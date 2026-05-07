@@ -103,6 +103,17 @@ public class UnidadeAtendimentoService {
         unidadeAtendimentoRepository.save(unidade);
     }
 
+    public List<UnidadeAtendimentoResponse> buscarPorTermo(String termo) {
+        if (termo == null || termo.isBlank()) {
+            return listarTodas(null, null);
+        }
+
+        return unidadeAtendimentoRepository.buscarPorTermo(termo.trim())
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     private UnidadeAtendimento buscarUnidadeOuFalhar(Long id) {
         return unidadeAtendimentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Unidade de atendimento não encontrada"));

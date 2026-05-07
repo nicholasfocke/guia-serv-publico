@@ -52,4 +52,11 @@ public class UnidadeAtendimentoController {
         unidadeAtendimentoService.excluir(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<UnidadeAtendimentoResponse>> buscarPorTermo(
+            @RequestParam(required = false) String termo
+    ) {
+        return ResponseEntity.ok(unidadeAtendimentoService.buscarPorTermo(termo));
+    }
 }

@@ -961,11 +961,3 @@ Backend Developer · Java & Spring Boot
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-nicholas--focke-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/nicholas-focke-833049269)
 
 </div>
-
----
-
-<div align="center">
-
-Feito com ☕ Java e dedicação · © 2024 Nicholas Focke
-
-</div>

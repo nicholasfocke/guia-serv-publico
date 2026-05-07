@@ -17,9 +17,16 @@ public interface UnidadeAtendimentoRepository extends JpaRepository<UnidadeAtend
 
     List<UnidadeAtendimento> findByBairroContainingIgnoreCaseAndAtivoTrue(String bairro);
 
-    List<UnidadeAtendimento> findByCidadeContainingIgnoreCaseAndBairroContainingIgnoreCaseAndAtivoTrue(
-            String cidade,
-            String bairro
+    @Query("""
+            SELECT u
+            FROM UnidadeAtendimento u
+            WHERE u.ativo = true
+            AND LOWER(u.cidade) LIKE LOWER(CONCAT('%', :cidade, '%'))
+            AND LOWER(u.bairro) LIKE LOWER(CONCAT('%', :bairro, '%'))
+            """)
+    List<UnidadeAtendimento> buscarPorCidadeEBairro(
+            @Param("cidade") String cidade,
+            @Param("bairro") String bairro
     );
 
     @Query("""

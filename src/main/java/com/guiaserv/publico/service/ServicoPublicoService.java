@@ -4,6 +4,7 @@ import com.guiaserv.publico.dto.request.ServicoPublicoRequest;
 import com.guiaserv.publico.dto.response.ServicoPublicoResponse;
 import com.guiaserv.publico.exception.DuplicateResourceException;
 import com.guiaserv.publico.exception.ResourceNotFoundException;
+import com.guiaserv.publico.mapper.ServicoPublicoMapper;
 import com.guiaserv.publico.model.CategoriaServico;
 import com.guiaserv.publico.model.ServicoPublico;
 import com.guiaserv.publico.repository.CategoriaServicoRepository;
@@ -19,6 +20,7 @@ public class ServicoPublicoService {
 
     private final ServicoPublicoRepository servicoPublicoRepository;
     private final CategoriaServicoRepository categoriaServicoRepository;
+    private final ServicoPublicoMapper servicoPublicoMapper;
 
     public ServicoPublicoResponse cadastrar(ServicoPublicoRequest request) {
         if (servicoPublicoRepository.existsByNomeIgnoreCase(request.nome())) {
@@ -27,31 +29,21 @@ public class ServicoPublicoService {
 
         CategoriaServico categoria = buscarCategoriaOuFalhar(request.categoriaId());
 
-        ServicoPublico servico = ServicoPublico.builder()
-                .nome(request.nome())
-                .descricao(request.descricao())
-                .palavrasChave(request.palavrasChave())
-                .precisaAgendamento(request.precisaAgendamento())
-                .orientacoes(request.orientacoes())
-                .ativo(true)
-                .categoria(categoria)
-                .build();
-
+        ServicoPublico servico = servicoPublicoMapper.toEntity(request, categoria);
         ServicoPublico servicoSalvo = servicoPublicoRepository.save(servico);
-
-        return toResponse(servicoSalvo);
+        return servicoPublicoMapper.toResponse(servicoSalvo);
     }
 
     public List<ServicoPublicoResponse> listarTodos() {
         return servicoPublicoRepository.findByAtivoTrue()
                 .stream()
-                .map(this::toResponse)
+                .map(servicoPublicoMapper::toResponse)
                 .toList();
     }
 
     public ServicoPublicoResponse buscarPorId(Long id) {
         ServicoPublico servico = buscarServicoOuFalhar(id);
-        return toResponse(servico);
+        return servicoPublicoMapper.toResponse(servico);
     }
 
     public List<ServicoPublicoResponse> buscarPorTermo(String termo) {
@@ -61,7 +53,7 @@ public class ServicoPublicoService {
 
         return servicoPublicoRepository.buscarPorTermo(termo.trim())
                 .stream()
-                .map(this::toResponse)
+                .map(servicoPublicoMapper::toResponse)
                 .toList();
     }
 
@@ -75,16 +67,9 @@ public class ServicoPublicoService {
 
         CategoriaServico categoria = buscarCategoriaOuFalhar(request.categoriaId());
 
-        servico.setNome(request.nome());
-        servico.setDescricao(request.descricao());
-        servico.setPalavrasChave(request.palavrasChave());
-        servico.setPrecisaAgendamento(request.precisaAgendamento());
-        servico.setOrientacoes(request.orientacoes());
-        servico.setCategoria(categoria);
-
+        servicoPublicoMapper.updateEntityFromRequest(request, categoria, servico);
         ServicoPublico servicoAtualizado = servicoPublicoRepository.save(servico);
-
-        return toResponse(servicoAtualizado);
+        return servicoPublicoMapper.toResponse(servicoAtualizado);
     }
 
     public void excluir(Long id) {
@@ -103,18 +88,4 @@ public class ServicoPublicoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Serviço público não encontrado"));
     }
 
-    private ServicoPublicoResponse toResponse(ServicoPublico servico) {
-        return new ServicoPublicoResponse(
-                servico.getId(),
-                servico.getNome(),
-                servico.getDescricao(),
-                servico.getPalavrasChave(),
-                servico.getPrecisaAgendamento(),
-                servico.getOrientacoes(),
-                servico.getAtivo(),
-                servico.getCriadoEm(),
-                servico.getCategoria().getId(),
-                servico.getCategoria().getNome()
-        );
-    }
 }

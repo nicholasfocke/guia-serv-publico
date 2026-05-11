@@ -4,6 +4,7 @@ import com.guiaserv.publico.dto.request.CategoriaServicoRequest;
 import com.guiaserv.publico.dto.response.CategoriaServicoResponse;
 import com.guiaserv.publico.exception.DuplicateResourceException;
 import com.guiaserv.publico.exception.ResourceNotFoundException;
+import com.guiaserv.publico.mapper.CategoriaServicoMapper;
 import com.guiaserv.publico.model.CategoriaServico;
 import com.guiaserv.publico.repository.CategoriaServicoRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,33 +17,28 @@ import java.util.List;
 public class CategoriaServicoService {
 
     private final CategoriaServicoRepository categoriaServicoRepository;
+    private final CategoriaServicoMapper categoriaServicoMapper;
 
     public CategoriaServicoResponse cadastrar(CategoriaServicoRequest request) {
         if (categoriaServicoRepository.existsByNomeIgnoreCase(request.nome())) {
             throw new DuplicateResourceException("Já existe uma categoria cadastrada com esse nome");
         }
 
-        CategoriaServico categoria = CategoriaServico.builder()
-                .nome(request.nome())
-                .descricao(request.descricao())
-                .ativa(true)
-                .build();
-
+        CategoriaServico categoria = categoriaServicoMapper.toEntity(request);
         CategoriaServico categoriaSalva = categoriaServicoRepository.save(categoria);
-
-        return toResponse(categoriaSalva);
+        return categoriaServicoMapper.toResponse(categoriaSalva);
     }
 
     public List<CategoriaServicoResponse> listarTodas() {
         return categoriaServicoRepository.findAll()
                 .stream()
-                .map(this::toResponse)
+                .map(categoriaServicoMapper::toResponse)
                 .toList();
     }
 
     public CategoriaServicoResponse buscarPorId(Long id) {
         CategoriaServico categoria = buscarCategoriaOuFalhar(id);
-        return toResponse(categoria);
+        return categoriaServicoMapper.toResponse(categoria);
     }
 
     public CategoriaServicoResponse atualizar(Long id, CategoriaServicoRequest request) {
@@ -53,12 +49,9 @@ public class CategoriaServicoService {
             throw new DuplicateResourceException("Já existe uma categoria cadastrada com esse nome");
         }
 
-        categoria.setNome(request.nome());
-        categoria.setDescricao(request.descricao());
-
+        categoriaServicoMapper.updateEntityFromRequest(request, categoria);
         CategoriaServico categoriaAtualizada = categoriaServicoRepository.save(categoria);
-
-        return toResponse(categoriaAtualizada);
+        return categoriaServicoMapper.toResponse(categoriaAtualizada);
     }
 
     public void excluir(Long id) {
@@ -71,13 +64,4 @@ public class CategoriaServicoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria de serviço não encontrada"));
     }
 
-    private CategoriaServicoResponse toResponse(CategoriaServico categoria) {
-        return new CategoriaServicoResponse(
-                categoria.getId(),
-                categoria.getNome(),
-                categoria.getDescricao(),
-                categoria.getAtiva(),
-                categoria.getCriadaEm()
-        );
-    }
 }

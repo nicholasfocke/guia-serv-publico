@@ -4,6 +4,7 @@ import com.guiaserv.publico.dto.request.UnidadeAtendimentoRequest;
 import com.guiaserv.publico.dto.response.UnidadeAtendimentoResponse;
 import com.guiaserv.publico.exception.DuplicateResourceException;
 import com.guiaserv.publico.exception.ResourceNotFoundException;
+import com.guiaserv.publico.mapper.UnidadeAtendimentoMapper;
 import com.guiaserv.publico.model.UnidadeAtendimento;
 import com.guiaserv.publico.repository.UnidadeAtendimentoRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 public class UnidadeAtendimentoService {
 
     private final UnidadeAtendimentoRepository unidadeAtendimentoRepository;
+    private final UnidadeAtendimentoMapper unidadeAtendimentoMapper;
 
     public UnidadeAtendimentoResponse cadastrar(UnidadeAtendimentoRequest request) {
         if (unidadeAtendimentoRepository.existsByNomeIgnoreCaseAndEnderecoIgnoreCase(
@@ -25,22 +27,9 @@ public class UnidadeAtendimentoService {
             throw new DuplicateResourceException("Já existe uma unidade cadastrada com esse nome e endereço");
         }
 
-        UnidadeAtendimento unidade = UnidadeAtendimento.builder()
-                .nome(request.nome())
-                .endereco(request.endereco())
-                .bairro(request.bairro())
-                .cidade(request.cidade())
-                .estado(request.estado())
-                .cep(request.cep())
-                .telefone(request.telefone())
-                .latitude(request.latitude())
-                .longitude(request.longitude())
-                .ativo(true)
-                .build();
-
+        UnidadeAtendimento unidade = unidadeAtendimentoMapper.toEntity(request);
         UnidadeAtendimento unidadeSalva = unidadeAtendimentoRepository.save(unidade);
-
-        return toResponse(unidadeSalva);
+        return unidadeAtendimentoMapper.toResponse(unidadeSalva);
     }
 
     public List<UnidadeAtendimentoResponse> listarTodas(String cidade, String bairro) {
@@ -58,13 +47,13 @@ public class UnidadeAtendimentoService {
         }
 
         return unidades.stream()
-                .map(this::toResponse)
+                .map(unidadeAtendimentoMapper::toResponse)
                 .toList();
     }
 
     public UnidadeAtendimentoResponse buscarPorId(Long id) {
         UnidadeAtendimento unidade = buscarUnidadeOuFalhar(id);
-        return toResponse(unidade);
+        return unidadeAtendimentoMapper.toResponse(unidade);
     }
 
     public UnidadeAtendimentoResponse atualizar(Long id, UnidadeAtendimentoRequest request) {
@@ -82,19 +71,9 @@ public class UnidadeAtendimentoService {
             throw new DuplicateResourceException("Já existe uma unidade cadastrada com esse nome e endereço");
         }
 
-        unidade.setNome(request.nome());
-        unidade.setEndereco(request.endereco());
-        unidade.setBairro(request.bairro());
-        unidade.setCidade(request.cidade());
-        unidade.setEstado(request.estado());
-        unidade.setCep(request.cep());
-        unidade.setTelefone(request.telefone());
-        unidade.setLatitude(request.latitude());
-        unidade.setLongitude(request.longitude());
-
+        unidadeAtendimentoMapper.updateEntityFromRequest(request, unidade);
         UnidadeAtendimento unidadeAtualizada = unidadeAtendimentoRepository.save(unidade);
-
-        return toResponse(unidadeAtualizada);
+        return unidadeAtendimentoMapper.toResponse(unidadeAtualizada);
     }
 
     public void excluir(Long id) {
@@ -110,7 +89,7 @@ public class UnidadeAtendimentoService {
 
         return unidadeAtendimentoRepository.buscarPorTermo(termo.trim())
                 .stream()
-                .map(this::toResponse)
+                .map(unidadeAtendimentoMapper::toResponse)
                 .toList();
     }
 
@@ -119,20 +98,4 @@ public class UnidadeAtendimentoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Unidade de atendimento não encontrada"));
     }
 
-    private UnidadeAtendimentoResponse toResponse(UnidadeAtendimento unidade) {
-        return new UnidadeAtendimentoResponse(
-                unidade.getId(),
-                unidade.getNome(),
-                unidade.getEndereco(),
-                unidade.getBairro(),
-                unidade.getCidade(),
-                unidade.getEstado(),
-                unidade.getCep(),
-                unidade.getTelefone(),
-                unidade.getLatitude(),
-                unidade.getLongitude(),
-                unidade.getAtivo(),
-                unidade.getCriadoEm()
-        );
-    }
 }

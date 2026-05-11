@@ -4,6 +4,7 @@ import com.guiaserv.publico.dto.request.DocumentoRequest;
 import com.guiaserv.publico.dto.response.DocumentoResponse;
 import com.guiaserv.publico.exception.DuplicateResourceException;
 import com.guiaserv.publico.exception.ResourceNotFoundException;
+import com.guiaserv.publico.mapper.DocumentoMapper;
 import com.guiaserv.publico.model.Documento;
 import com.guiaserv.publico.model.ServicoPublico;
 import com.guiaserv.publico.repository.DocumentoRepository;
@@ -19,6 +20,7 @@ public class DocumentoService {
 
     private final DocumentoRepository documentoRepository;
     private final ServicoPublicoRepository servicoPublicoRepository;
+    private final DocumentoMapper documentoMapper;
 
     public DocumentoResponse cadastrar(DocumentoRequest request) {
         ServicoPublico servico = buscarServicoOuFalhar(request.servicoId());
@@ -27,17 +29,9 @@ public class DocumentoService {
             throw new DuplicateResourceException("Já existe um documento com esse nome vinculado ao serviço informado");
         }
 
-        Documento documento = Documento.builder()
-                .nome(request.nome())
-                .descricao(request.descricao())
-                .obrigatorio(request.obrigatorio())
-                .ativo(true)
-                .servicoPublico(servico)
-                .build();
-
+        Documento documento = documentoMapper.toEntity(request, servico);
         Documento documentoSalvo = documentoRepository.save(documento);
-
-        return toResponse(documentoSalvo);
+        return documentoMapper.toResponse(documentoSalvo);
     }
 
     public List<DocumentoResponse> listarPorServico(Long servicoId) {
@@ -45,7 +39,7 @@ public class DocumentoService {
 
         return documentoRepository.findByServicoPublicoIdAndAtivoTrue(servicoId)
                 .stream()
-                .map(this::toResponse)
+                .map(documentoMapper::toResponse)
                 .toList();
     }
 
@@ -62,14 +56,9 @@ public class DocumentoService {
             throw new DuplicateResourceException("Já existe um documento com esse nome vinculado ao serviço informado");
         }
 
-        documento.setNome(request.nome());
-        documento.setDescricao(request.descricao());
-        documento.setObrigatorio(request.obrigatorio());
-        documento.setServicoPublico(servico);
-
+        documentoMapper.updateEntityFromRequest(request, servico, documento);
         Documento documentoAtualizado = documentoRepository.save(documento);
-
-        return toResponse(documentoAtualizado);
+        return documentoMapper.toResponse(documentoAtualizado);
     }
 
     public void excluir(Long id) {
@@ -88,16 +77,4 @@ public class DocumentoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Documento não encontrado"));
     }
 
-    private DocumentoResponse toResponse(Documento documento) {
-        return new DocumentoResponse(
-                documento.getId(),
-                documento.getNome(),
-                documento.getDescricao(),
-                documento.getObrigatorio(),
-                documento.getAtivo(),
-                documento.getCriadoEm(),
-                documento.getServicoPublico().getId(),
-                documento.getServicoPublico().getNome()
-        );
-    }
 }

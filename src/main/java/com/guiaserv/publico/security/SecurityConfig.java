@@ -40,69 +40,20 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        // SERVIÇOS - PÚBLICO
-                        .requestMatchers(HttpMethod.GET, "/api/servicos").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/servicos/**").permitAll()
-
-                        // UNIDADES - PÚBLICO
-                        .requestMatchers(HttpMethod.GET, "/api/unidades").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/unidades/**").permitAll()
-
-                        // DOCUMENTOS - USER OU ADMIN
+                        // DOCUMENTOS DO SERVIÇO - USER OU ADMIN
                         .requestMatchers(HttpMethod.GET, "/api/servicos/*/documentos").hasAnyRole("USER", "ADMIN")
 
-                        // AVALIAÇÕES - USER OU ADMIN
-                        .requestMatchers(HttpMethod.POST, "/api/avaliacoes").hasAnyRole("USER", "ADMIN")
-
-                        // ADMIN - SERVIÇOS
-                        .requestMatchers(HttpMethod.POST, "/api/servicos").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/servicos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/servicos/**").hasRole("ADMIN")
-
-                        // ADMIN - UNIDADES
-                        .requestMatchers(HttpMethod.POST, "/api/unidades").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/unidades/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/unidades/**").hasRole("ADMIN")
+                        // ADMIN - VÍNCULO SERVIÇO-DOCUMENTO
+                        .requestMatchers(HttpMethod.POST, "/api/servicos/*/documentos/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/servicos/*/documentos/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/servicos/*/documentos/*").hasRole("ADMIN")
 
                         // ADMIN - DOCUMENTOS
+                        .requestMatchers(HttpMethod.GET, "/api/documentos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/documentos/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/documentos").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/documentos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/documentos/**").hasRole("ADMIN")
-
-                        // CATEGORIAS - PÚBLICO
-                        .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
-
-                        // ADMIN - CATEGORIAS
-                        .requestMatchers(HttpMethod.POST, "/api/categorias").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/categorias/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").hasRole("ADMIN")
-
-                        // SERVIÇOS - PÚBLICO
-                        .requestMatchers(HttpMethod.GET, "/api/servicos").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/servicos/**").permitAll()
-
-                        // ADMIN - SERVIÇOS
-                        .requestMatchers(HttpMethod.POST, "/api/servicos").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/servicos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/servicos/**").hasRole("ADMIN")
-
-                            // UNIDADES - PÚBLICO
-                        .requestMatchers(HttpMethod.GET, "/api/unidades").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/unidades/**").permitAll()
-
-                        // ADMIN - UNIDADES
-                        .requestMatchers(HttpMethod.POST, "/api/unidades").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/unidades/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/unidades/**").hasRole("ADMIN")
-
-                        // DOCUMENTOS - USER OU ADMIN
-                        .requestMatchers(HttpMethod.GET, "/api/servicos/*/documentos").hasAnyRole("USER", "ADMIN")
-
-                        // ADMIN - DOCUMENTOS
-                        .requestMatchers(HttpMethod.POST, "/api/documentos").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/documentos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/documentos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/documentos/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/documentos/*").hasRole("ADMIN")
 
                         // VÍNCULO SERVIÇO-UNIDADE - PÚBLICO
                         .requestMatchers(HttpMethod.GET, "/api/servicos/*/unidades").permitAll()
@@ -124,8 +75,37 @@ public class SecurityConfig {
 
                         // ADMIN - HORÁRIOS
                         .requestMatchers(HttpMethod.POST, "/api/horarios").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/horarios/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/horarios/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/horarios/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/horarios/*").hasRole("ADMIN")
+
+                        // CATEGORIAS - PÚBLICO
+                        .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categorias/*").permitAll()
+
+                        // ADMIN - CATEGORIAS
+                        .requestMatchers(HttpMethod.POST, "/api/categorias").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/categorias/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/categorias/*").hasRole("ADMIN")
+
+                        // SERVIÇOS - PÚBLICO
+                        .requestMatchers(HttpMethod.GET, "/api/servicos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/servicos/buscar").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/servicos/*").permitAll()
+
+                        // ADMIN - SERVIÇOS
+                        .requestMatchers(HttpMethod.POST, "/api/servicos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/servicos/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/servicos/*").hasRole("ADMIN")
+
+                        // UNIDADES - PÚBLICO
+                        .requestMatchers(HttpMethod.GET, "/api/unidades").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/unidades/buscar").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/unidades/*").permitAll()
+
+                        // ADMIN - UNIDADES
+                        .requestMatchers(HttpMethod.POST, "/api/unidades").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/unidades/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/unidades/*").hasRole("ADMIN")
 
                         // QUALQUER OUTRA ROTA EXIGE LOGIN
                         .anyRequest().authenticated()

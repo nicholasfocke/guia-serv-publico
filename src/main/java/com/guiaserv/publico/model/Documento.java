@@ -6,7 +6,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "documentos")
+@Table(
+        name = "documentos",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_documento_nome", columnNames = "nome")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,22 +29,11 @@ public class Documento {
     @Column(name = "descricao", nullable = false, length = 500)
     private String descricao;
 
-    @Column(name = "obrigatorio", nullable = false)
-    private Boolean obrigatorio;
-
     @Column(name = "ativo", nullable = false)
     private Boolean ativo;
 
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(
-            name = "servico_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_documento_servico")
-    )
-    private ServicoPublico servicoPublico;
 
     @PrePersist
     public void prePersist() {
@@ -47,10 +41,6 @@ public class Documento {
 
         if (this.ativo == null) {
             this.ativo = true;
-        }
-
-        if (this.obrigatorio == null) {
-            this.obrigatorio = true;
         }
     }
 }

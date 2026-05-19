@@ -13,6 +13,11 @@ import java.time.LocalDateTime;
                         name = "uk_avaliacao_usuario_servico_unidade",
                         columnNames = {"usuario_id", "servico_id", "unidade_id"}
                 )
+        },
+        indexes = {
+                @Index(name = "idx_avaliacao_servico", columnList = "servico_id"),
+                @Index(name = "idx_avaliacao_unidade", columnList = "unidade_id"),
+                @Index(name = "idx_avaliacao_usuario", columnList = "usuario_id")
         }
 )
 @Getter

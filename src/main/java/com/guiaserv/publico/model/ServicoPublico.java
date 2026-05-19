@@ -10,6 +10,11 @@ import java.time.LocalDateTime;
         name = "servicos_publicos",
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_servico_publico_nome", columnNames = "nome")
+        },
+        indexes = {
+                @Index(name = "idx_servico_nome", columnList = "nome"),
+                @Index(name = "idx_servico_palavras_chave", columnList = "palavras_chave"),
+                @Index(name = "idx_servico_categoria", columnList = "categoria_id")
         }
 )
 @Getter

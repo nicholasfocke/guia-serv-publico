@@ -8,7 +8,12 @@ import java.time.LocalDateTime;
 @Entity
 @Table(
         name = "usuarios",
-        uniqueConstraints = {@UniqueConstraint(name = "uk_usuario_email", columnNames = "email")}
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_usuario_email", columnNames = "email")
+        },
+        indexes = {
+                @Index(name = "idx_usuario_email", columnList = "email")
+        }
 )
 @Getter
 @Setter

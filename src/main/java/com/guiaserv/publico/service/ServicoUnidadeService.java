@@ -4,6 +4,7 @@ import com.guiaserv.publico.dto.request.ServicoUnidadeRequest;
 import com.guiaserv.publico.dto.response.ServicoUnidadeResponse;
 import com.guiaserv.publico.exception.DuplicateResourceException;
 import com.guiaserv.publico.exception.ResourceNotFoundException;
+import com.guiaserv.publico.mapper.ServicoUnidadeMapper;
 import com.guiaserv.publico.model.ServicoPublico;
 import com.guiaserv.publico.model.ServicoUnidade;
 import com.guiaserv.publico.model.UnidadeAtendimento;
@@ -22,6 +23,7 @@ public class ServicoUnidadeService {
     private final ServicoUnidadeRepository servicoUnidadeRepository;
     private final ServicoPublicoRepository servicoPublicoRepository;
     private final UnidadeAtendimentoRepository unidadeAtendimentoRepository;
+    private final ServicoUnidadeMapper servicoUnidadeMapper;
 
     public ServicoUnidadeResponse vincular(
             Long servicoId,
@@ -35,16 +37,14 @@ public class ServicoUnidadeService {
             throw new DuplicateResourceException("Este serviço já está vinculado a esta unidade");
         }
 
-        ServicoUnidade vinculo = ServicoUnidade.builder()
-                .servicoPublico(servico)
-                .unidadeAtendimento(unidade)
-                .observacoes(request != null ? request.observacoes() : null)
-                .ativo(true)
-                .build();
+        ServicoUnidadeRequest requestFinal = request != null
+                ? request
+                : new ServicoUnidadeRequest(null);
 
+        ServicoUnidade vinculo = servicoUnidadeMapper.toEntity(requestFinal, servico, unidade);
         ServicoUnidade vinculoSalvo = servicoUnidadeRepository.save(vinculo);
 
-        return toResponse(vinculoSalvo);
+        return servicoUnidadeMapper.toResponse(vinculoSalvo);
     }
 
     public List<ServicoUnidadeResponse> listarUnidadesPorServico(Long servicoId) {
@@ -52,7 +52,7 @@ public class ServicoUnidadeService {
 
         return servicoUnidadeRepository.findByServicoPublicoIdAndAtivoTrue(servicoId)
                 .stream()
-                .map(this::toResponse)
+                .map(servicoUnidadeMapper::toResponse)
                 .toList();
     }
 
@@ -61,7 +61,7 @@ public class ServicoUnidadeService {
 
         return servicoUnidadeRepository.findByUnidadeAtendimentoIdAndAtivoTrue(unidadeId)
                 .stream()
-                .map(this::toResponse)
+                .map(servicoUnidadeMapper::toResponse)
                 .toList();
     }
 
@@ -87,24 +87,4 @@ public class ServicoUnidadeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Unidade de atendimento não encontrada"));
     }
 
-    private ServicoUnidadeResponse toResponse(ServicoUnidade vinculo) {
-        UnidadeAtendimento unidade = vinculo.getUnidadeAtendimento();
-
-        return new ServicoUnidadeResponse(
-                vinculo.getId(),
-                vinculo.getServicoPublico().getId(),
-                vinculo.getServicoPublico().getNome(),
-                unidade.getId(),
-                unidade.getNome(),
-                unidade.getEndereco(),
-                unidade.getBairro(),
-                unidade.getCidade(),
-                unidade.getEstado(),
-                unidade.getCep(),
-                unidade.getTelefone(),
-                vinculo.getObservacoes(),
-                vinculo.getAtivo(),
-                vinculo.getCriadoEm()
-        );
-    }
 }

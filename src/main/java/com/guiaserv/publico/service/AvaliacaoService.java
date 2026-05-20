@@ -4,6 +4,7 @@ import com.guiaserv.publico.dto.request.AvaliacaoRequest;
 import com.guiaserv.publico.dto.response.AvaliacaoResponse;
 import com.guiaserv.publico.exception.DuplicateResourceException;
 import com.guiaserv.publico.exception.ResourceNotFoundException;
+import com.guiaserv.publico.mapper.AvaliacaoMapper;
 import com.guiaserv.publico.model.Avaliacao;
 import com.guiaserv.publico.model.ServicoPublico;
 import com.guiaserv.publico.model.UnidadeAtendimento;
@@ -25,6 +26,7 @@ public class AvaliacaoService {
     private final UsuarioRepository usuarioRepository;
     private final ServicoPublicoRepository servicoPublicoRepository;
     private final UnidadeAtendimentoRepository unidadeAtendimentoRepository;
+    private final AvaliacaoMapper avaliacaoMapper;
 
     public AvaliacaoResponse avaliar(AvaliacaoRequest request, String emailUsuarioAutenticado) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuarioAutenticado)
@@ -44,18 +46,10 @@ public class AvaliacaoService {
             throw new DuplicateResourceException("Você já avaliou este serviço nesta unidade");
         }
 
-        Avaliacao avaliacao = Avaliacao.builder()
-                .nota(request.nota())
-                .comentario(request.comentario())
-                .usuario(usuario)
-                .servicoPublico(servico)
-                .unidadeAtendimento(unidade)
-                .ativo(true)
-                .build();
-
+        Avaliacao avaliacao = avaliacaoMapper.toEntity(request, usuario, servico, unidade);
         Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacao);
 
-        return toResponse(avaliacaoSalva);
+        return avaliacaoMapper.toResponse(avaliacaoSalva);
     }
 
     public List<AvaliacaoResponse> listarPorServico(Long servicoId) {
@@ -65,7 +59,7 @@ public class AvaliacaoService {
 
         return avaliacaoRepository.findByServicoPublicoIdAndAtivoTrue(servicoId)
                 .stream()
-                .map(this::toResponse)
+                .map(avaliacaoMapper::toResponse)
                 .toList();
     }
 
@@ -76,23 +70,8 @@ public class AvaliacaoService {
 
         return avaliacaoRepository.findByUnidadeAtendimentoIdAndAtivoTrue(unidadeId)
                 .stream()
-                .map(this::toResponse)
+                .map(avaliacaoMapper::toResponse)
                 .toList();
     }
 
-    private AvaliacaoResponse toResponse(Avaliacao avaliacao) {
-        return new AvaliacaoResponse(
-                avaliacao.getId(),
-                avaliacao.getNota(),
-                avaliacao.getComentario(),
-                avaliacao.getUsuario().getId(),
-                avaliacao.getUsuario().getNome(),
-                avaliacao.getServicoPublico().getId(),
-                avaliacao.getServicoPublico().getNome(),
-                avaliacao.getUnidadeAtendimento().getId(),
-                avaliacao.getUnidadeAtendimento().getNome(),
-                avaliacao.getAtivo(),
-                avaliacao.getCriadoEm()
-        );
-    }
 }
